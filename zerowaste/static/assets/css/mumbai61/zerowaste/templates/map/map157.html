@@ -1,0 +1,666 @@
+{% extends 'map/map_base.html' %}
+{% load static%}
+{% block extra_map_css %}
+{% load i18n %}
+<!-- import psycopg2 -->
+<style>
+
+    
+.border {
+    padding: 6px 8px;
+    border-style: groove;
+    border-radius: 5px;
+    margin:20px;
+}
+.info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
+
+/* .table{
+  border-collapse: collapse;
+  padding: 50px;
+  font-weight: bold;
+
+  
+  /* background:rgba(191, 149, 233, 0.473); */
+
+/* } */ */
+table, th, td 
+    {
+        border-bottom: 1px solid #ddd;
+        border-collapse: collapse;
+        padding: 2px 3px;
+        text-align: center;
+    }
+    th {
+        font-weight:bold;
+    }
+
+.legend {
+    line-height: 18px;
+    color: #555;
+}
+.legend i {
+   
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+.legendwet {
+    line-height: 18px;
+    color: #555;
+}
+.legendwet i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+/* css to customize Leaflet default styles  */
+.leaflet-popup-content-wrapper {
+    background: rgba(0, 0, 0, 0.9);
+    color: #ffffff;
+}
+
+.leaflet-popup-content{
+    font-weight: bold;
+}
+/* css for table tbinfo*/
+#tbinfo {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  font-weight: bolder;
+}
+
+#tbinfo td, #tbinfo th {
+  border: 3px solid #ddd;
+  padding: 8px;
+}
+
+#tbinfo tr:nth-child(even){background-color: #f2f2f2;}
+
+#tbinfo tr:hover {background-color: rgb(194, 92, 92);}
+
+#tbinfo th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+#checkboxes {
+  display: none;
+  /* border: 1px #dadada solid; */
+}
+
+#datepick {
+  display: none;
+  /* border: 1px #dadada solid; */
+}
+
+#checkboxes label {
+  display: block;
+  text-decoration-color: blue;
+  text-align: left;
+  margin: 10px;
+}
+
+#checkboxes2 {
+  display: none;
+  /* border: 1px #dadada solid; */
+}
+
+#checkboxes2 label {
+  display: block;
+  text-decoration-color: blue;
+  text-align: left;
+  margin: 10px;
+}
+
+#checkboxes3 {
+  display: none;
+  /* border: 1px #dadada solid; */
+}
+
+#checkboxes3 label {
+  display: block;
+  background-color:white;
+  text-decoration-color: blue;
+  text-align: left;
+  margin: 10px;
+}
+#checkboxes7 {
+        display: none;
+        /* border: 1px #dadada solid; */
+}
+    
+#checkboxes7 label {
+        display: block;
+        text-align: left;
+        margin: 10px;
+}
+
+#checkboxes2 {
+        display: none;
+        /* border: 1px #dadada solid; */
+}
+    
+#checkboxes2 label {
+        display: block;
+        text-align: left;
+        margin: 10px;
+}
+
+#checkboxes5 {
+        display: none;
+        /* border: 1px #dadada solid; */
+    }
+    
+#checkboxes5 label {
+        display: block;
+        text-align: left;
+        margin: 10px;
+}
+#checkboxes4 {
+        display: none;
+        /* border: 1px #dadada solid; */
+}
+#checkboxeszone {
+        display: none;
+        /* border: 1px #dadada solid; */
+}
+#checkboxeszone label{
+    display: block;
+    text-align: left;
+    margin: 10px;
+}
+
+
+#radiobutt {
+    display:none;
+}
+#radiobutt label{
+    display: block;
+    text-align: left;
+    margin: 20px;
+}
+    
+#checkboxes4 label {
+        display: block;
+        text-align: left;
+        margin: 10px;
+}
+
+
+/* Popup container - can be anything you want */
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  left: 50%;
+  margin-right: -5px;
+  border-width: 5px;
+}
+
+/* The actual popup */
+.popup .popuptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* Toggle this class - hide and show the popup */
+.popup .show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;} 
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}
+
+.form-control {
+  width: 160px;
+}
+
+.circle {
+        /* background-color: red; */
+        border-radius: 50%;
+    }
+</style>
+
+{% endblock extra_map_css%}
+
+{% block map_content%}
+  <!-- {% block sidebar %}
+  {% endblock %} -->
+
+  
+  
+    <div id="side-bar" style="background-color:  rgba(255, 255, 255);">                <!-- side-bar container -->
+        <div class="mobileShow">
+
+            <div style="text-align: center">
+                <button style="display: inline-block ;position: relative; background: #000; opacity: 0.60;" id="closebutton" name="closebutton" class="btn btn-secondary"><span class="fa fa-bars"></span></button>
+            </div>
+    
+        </div>
+      <div>
+        <div class="text-center border">
+
+
+            <form id="projectList" style="width: 100%">
+
+                <form>
+                    <div class="multiselect">
+                        <div class="selectBox" onclick="showCheckboxes3()">
+                            <button type="button" class="btn btn-outline-dark" style="width: 90%;font-size:12px; "> {% trans "Geographical Hierarchy" %}</button>
+                            <div class="overSelect"></div>
+                        </div>
+                        <div id="checkboxes3">
+                            <div class="checkbox" id="boundary">
+                                <label><input type="checkbox" value="{suburban}" onchange="getBoundaryru(this)"><span> {% trans "Mumbai Suburban Boundary" %}</span></label>
+                            </div>
+                            <div class="checkbox" id="boundary">
+                                <label><input type="checkbox" value="{wardL}" onchange="getBoundaryru(this)"><span> {% trans "Mumbai Suburban -  Ward L" %}</span></label>
+                            </div>
+                            <div class="checkbox">
+                              <label><input type="checkbox" value="{157bound}" onchange="getBoundaryru(this)"><span> {% trans "157 Ward" %}</span></label>
+                            </div>
+                           
+                        </div>
+                    </div>
+                    
+                    <br>
+                      
+                    <div class="multiselect">
+                      <div class="selectBox" onclick="showCheckboxes7()">
+                          <button type="button" class="btn btn-outline-dark" style="width: 90%;font-size:12px; "> {% trans "Ward 157 Landmarks" %}</button>
+                          <div class="overSelect"></div>
+                      </div>
+                      <div id="checkboxes7">
+                        <div class="checkbox">
+                            <label><input type="checkbox" value="{zones}" id ="zones" onchange="getBoundaryru(this)"><span> {% trans "Zones" %}</span></label>
+                          </div>
+                          <div class="checkbox">
+                              <label><input type="checkbox" value="{osmbuild}" id ="build_osm" onchange="getBoundaryru(this)"><span> {% trans "Building Polygons" %}</span></label>
+                          </div> 
+                          <div class="checkbox">
+                            <label><input type="checkbox" value="{buildings}" id ="buildings" onchange="getBoundaryru(this)"><span> {% trans "Buildings Points" %}</span></label>
+                          </div>                       
+                      
+                      </div>
+                     <br>
+                     <br>
+
+                      <!-- <button type="button" class="btn btn-primary" id='locate'>{% trans "Your Location" %}</button> -->
+                    </div>
+                   
+                </div> 
+                      
+            </form>
+
+        
+</form>
+{% endblock map_content%}
+{% block extra_map_javascript%}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+// *****************
+let $locate = $('#locate');
+let $body = $('body');
+let currentPos = null;
+let marker = null;
+let oldMarker = null;
+let oldLayer = null;
+
+// YOUR LOCATION BUTTON
+$locate.on('click', function(e) {
+    if (oldMarker) {
+        mymap.removeLayer(oldMarker);
+        oldMarker = null;
+    }
+    if (oldLayer) {
+        mymap.removeLayer(oldLayer);
+        oldLayer = null;
+        facilityLayer = new L.featureGroup();
+    }
+    // $status.html('finding your location');
+    if (!navigator.geolocation) {
+        alert("<p>Sorry, your browser does not support Geolocation</p>");
+        return;
+    }
+    $body.removeClass('loaded');
+    navigator.geolocation.getCurrentPosition(success, error);
+});
+
+    // IF LOCATION FETCH BY BROWSER SUCCESS
+    function success(position) {
+    $body.addClass('loaded');
+    currentPos = [position.coords.latitude, position.coords.longitude];
+    mymap.setView(currentPos, 13);
+    marker = L.marker(currentPos)
+        .addTo(mymap)
+        .bindTooltip("Your Location")
+        .openTooltip();
+    oldMarker = marker;
+
+};
+// IF error IN FETCHING LOCATION
+function error() {
+    alert("Unable to retrieve your location");
+};
+
+const domain = ['https://geoserver2.communitygis.net/', 'http://localhost/'];
+    var rootUrl = domain[0] + 'geoserver/geonode/ows';
+
+    var defaultParameters = {
+        service: 'WFS',
+        version: '1.0.0',
+        request: 'GetFeature',
+        outputFormat: 'json'
+    };
+
+    var wms_legend;
+    var info = L.control();
+    var attribute_table = L.control({
+        position: 'bottomright'
+    });
+    var LayerList = [];
+    var tempParameter = defaultParameters;
+    var newLayerList = [];
+    var pointLayerList = [];
+
+    var myWorliLayerList = [];
+    var popup_layer, content;           
+    let  imageloca= [];
+    
+
+                
+
+// <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+var expanded = false;
+
+function showCheckboxes2() { //geographical heirarchy
+    var checkboxes = document.getElementById("checkboxes2");
+    if (!expanded) {
+        checkboxes2.style.display = "block";
+        expanded = true;
+    } else {
+        checkboxes2.style.display = "none";
+        expanded = false;
+    }
+}
+
+function showCheckboxes3() { //geographical heirarchy
+    var checkboxes = document.getElementById("checkboxes3");
+    if (!expanded) {
+        checkboxes3.style.display = "block";
+        expanded = true;
+    } else {
+        checkboxes3.style.display = "none";
+        expanded = false;
+    }
+}
+
+function showCheckboxes7() { //zonal geometry
+    var checkboxes = document.getElementById("checkboxes7");
+    
+    if (!expanded) {
+        checkboxes7.style.display = "block";
+        expanded = true;
+    } else {
+
+        checkboxes7.style.display = "none";
+        expanded = false;
+    }
+}
+
+function getBoundaryru(obj) {
+    let boundary = obj.value;
+    // console.log(boundary)
+    if ($(obj).is(":checked")) {
+
+        if (boundary == "{suburban}")
+            putLayer("Mumbai Suburban");
+        else if (boundary == "{wardL}")    
+            putWMSru("geonode:L_ward_polygons_16Apr2020");
+        else if (boundary == "{157bound}")    
+            putWMSru("Ward157:ward157_22oct");
+        else if (boundary == "{zones}")    
+            putWMSru("Ward157:ward_157_zones"); 
+        else if (boundary == "{buildings}")    
+            putWMSru("Ward157:ward_157_buildings"); 
+        else if (boundary == "{osmbuild}")    
+            putWMSru("Ward157:ward_157_buildings_osm");  
+        
+
+    } else {
+//       alert('in removeWM'+obj.value);
+        if (boundary == "{wardL}")
+            removeWMS("geonode:L_ward_polygons_16Apr2020");
+        else if (boundary == "{suburban}")
+            removeWMS("Mumbai Suburban");
+        else if (boundary == "{zones}")                        
+            removeWMS("Ward157:ward_157_zones");
+        else if (boundary == "{157bound}")                        
+            removeWMS("Ward157:ward157_22oct");
+        else if (boundary == "{buildings}")    
+            removeWMS("Ward157:ward_157_buildings"); 
+        else if (boundary == "{osmbuild}")    
+            removeWMS("Ward157:ward_157_buildings_osm");    
+        
+        
+    };
+
+
+}
+function putWMSru(layer) {
+    // console.log(layer)
+    if (layer == "geonode:L_ward_polygons_16Apr2020") {
+    layer = 'geonode:L_ward_polygons_16Apr2020';
+    currentPos = [19.0959,72.8933]; 
+    var maximumzoom = 19;
+    var opac = 0.6;
+    var zoom = 13;
+
+    } 
+    else if (layer == "Ward157:ward_157_zones") {
+    currentPos = [19.1133, 72.8905];
+    var maximumzoom = 20;
+    var opac = 0.4;
+    var zoom = 15;
+    }
+    else if (layer == "Ward157:ward157_22oct") {
+    currentPos = [19.1139, 72.8905];
+    var maximumzoom = 20;
+    var opac = 0.5;
+    var zoom = 13;
+    }
+    else if (layer == "Ward157:ward_157_buildings") {
+    currentPos = [19.1139, 72.8905];
+    var maximumzoom = 20;
+    var opac = 0.5;
+    var zoom = 15;
+    }
+    else if (layer == "Ward157:ward_157_buildings_osm") {
+    currentPos = [19.1139, 72.8905];
+    var maximumzoom = 20;
+    var opac = 0.5;
+    var zoom = 15;
+    }
+        // console.log(layer)
+    var wms_layer = L.tileLayer.wms('https://geoserver2.communitygis.net/geoserver/wms', {
+        layers: layer,
+        format: 'image/png',
+        // opacity:0.5,
+        transparent:true,
+        maxZoom:maximumzoom,
+
+    });
+        wms_layer.addTo(mymap);
+        mymap.setView(currentPos, zoom);
+        newLayerList.push(wms_layer);
+        popup_layer="https://geoserver2.communitygis.net/geoserver/IITB/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=" + wms_layer.options.layers + "&QUERY_LAYERS=" + wms_layer.options.layers;  
+        console.log("popupzone",popup_layer);
+        console.log(wms_layer);
+        if (wms_legend) {
+             mymap.removeControl(wms_legend);
+        }
+        //  mymap.removeControl(legend);
+        // addLegend(position ="bottomright", pal = pal, 
+                    // values = ~Type,
+                    // title = "Zone Types",
+                    // opacity = 1)
+        addWMSLegend(layer);
+}
+function removeWMS(unchecked_layer) {
+    newLayerList.forEach((layer, index) => {
+    if (layer.options.layers === unchecked_layer) {
+        // alert(layer,unchecked_layer);
+        // alert("legend is"+wms_legend.value);
+        mymap.removeLayer(layer);
+        newLayerList.splice(index, 1);
+        // mymap.removeControl(legend);
+        if (wms_legend) {
+        // alert(wms_legend)
+        mymap.removeControl(wms_legend);
+      }
+        // mymap.removeControl(legend1);
+    }
+    });
+}
+function addWMSLegend(layer) {
+    lagendGraphic = "https://geoserver2.communitygis.net/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=" + layer + "&LEGEND_OPTIONS=forceLabels:on";
+    wms_legend = L.wmsLegend(lagendGraphic);
+}
+function putLayer(opt){
+    console.log("opt is "+opt);
+    var wms_layer = L.tileLayer.wms('https://geoserver2.communitygis.net/geoserver/wms', {
+        // layers: 'geonode:island_city_revised_2_july',
+        layers: 'geonode:maha_taluka_13march2021',
+        format: 'image/png',
+        transparent: 'true',
+        cql_filter: `distname='${opt}'`,
+        
+    });
+    wms_layer.addTo(mymap);
+    // wardLayerList.push(wms_layer);
+    console.log(wms_layer);
+    // if(opt == 'Mumbai')
+    //   mymap.setView([19.0110, 72.8512], 12);
+      
+    // else
+      mymap.setView([19.1186, 72.8064], 11);
+
+}
+
+mymap.addEventListener('click', Identify);
+// function for displaying spots
+
+    
+function Identify(e) {
+
+    console.log("Identify",e);
+    // set parameters needed for GetFeatureInfo WMS request
+    var sw = mymap.options.crs.project(mymap.getBounds().getSouthWest());
+    var ne = mymap.options.crs.project(mymap.getBounds().getNorthEast());
+    var BBOX = sw.x + "," + sw.y + "," + ne.x + "," + ne.y;
+    var WIDTH = mymap.getSize().x;
+    var HEIGHT = mymap.getSize().y;
+
+    var X = Math.trunc(mymap.layerPointToContainerPoint(e.layerPoint).x);
+    var Y = Math.trunc(mymap.layerPointToContainerPoint(e.layerPoint).y);
+
+    // compose the URL for the request
+    
+
+    var URL = popup_layer + '&BBOX=' + BBOX + '&FEATURE_COUNT=1&HEIGHT=' + HEIGHT + '&WIDTH=' + WIDTH + '&INFO_FORMAT=application%2Fjson&TILED=false&CRS=EPSG%3A3857&I=' + X + '&J=' + Y;
+    // console.log(URL);
+    //send GetFeatureInfo as asynchronous HTTP request using jQuery $.ajax
+    $.ajax({
+        url: URL,
+        dataType: "json",
+        type: "GET",
+        success: function(data) {
+            if (data.features.length !== 0) { // at least one feature returned in response
+                var feature = data.features[0]; // first feature from response
+                console.log(feature);
+                // Set up popup for clicked feature and open it
+                var popup = new L.Popup({
+                    maxWidth: 300
+                });
+                
+                if (feature.properties.Name) {
+                    // console.log("I reached at");
+                    content = "<table class = 'popupclass' ><tr><td><b>Buildings Info</b></td><td></td></tr>" +
+                        "<tr><td><b>Building Name: </b></td><td>" + feature.properties.Name + "</td></tr>"+
+                        "<tr><td><b>Description: </b></td><td>"+feature.properties.descriptio + "</td></tr></table>";
+
+                            
+                popup.setContent(content);
+                popup.setLatLng(e.latlng);
+                mymap.openPopup(popup);
+                }
+            }
+        }
+    });
+}
+
+    
+
+
+    //Legends for bin path, spots, bubbles and zone
+
+    
+
+</script>
+{% endblock extra_map_javascript %}
