@@ -309,9 +309,31 @@ table, th, td
                             <div class="checkbox" id="boundary">
                                 <label><input type="checkbox" value="{wardGSouth}" onchange="getBoundaryru(this)"><span> {% trans "Mumbai Suburban -  Ward G-South" %}</span></label>
                             </div>
-                            <!-- <div class="checkbox">
-                              <label><input type="checkbox" value="{61bound}" onchange="getBoundaryru(this)"><span> {% trans "61 Ward" %}</span></label>
-                            </div> -->
+                            <div class="checkbox">
+                                <label><span> {% trans "G-South Corporator Wards" %}</span></label>
+                              </div>
+                            <div class="checkbox">
+                              <label><input type="checkbox" value="193" onchange="getBoundaryru(this)"><span> {% trans "193" %}</span></label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="194" onchange="getBoundaryru(this)"><span> {% trans "194" %}</span></label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="195" onchange="getBoundaryru(this)"><span> {% trans "195" %}</span></label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="196" onchange="getBoundaryru(this)"><span> {% trans "196" %}</span></label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="197" onchange="getBoundaryru(this)"><span> {% trans "197" %}</span></label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="198" onchange="getBoundaryru(this)"><span> {% trans "198" %}</span></label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="199" onchange="getBoundaryru(this)"><span> {% trans "199" %}</span></label>
+                            </div>
+
                            
                         </div>
                         
@@ -361,7 +383,7 @@ table, th, td
                             <label><input type="checkbox" value="{social_amenities}" id ="social_amenities" onchange="getBoundaryDP(this)"><span> {% trans "Social Amenities" %}</span></label>
                           </div>
                           <div class="checkbox">
-                            <label><input type="checkbox" value="{tranporatation}" id ="tranporatation" onchange="getBoundaryDP(this)"><span> {% trans "TRansportation </span></label>
+                            <label><input type="checkbox" value="{tranporatation}" id ="tranporatation" onchange="getBoundaryDP(this)"><span> {% trans "Transportation" %} </span></label>
                           </div>
                           <!-- <div class="checkbox">
                             <label><input type="checkbox" value="{roads}" id ="buildingsosm" onchange="displayPoint()"><span> {% trans "OSM BUILDINGS" %}</span></label>
@@ -457,6 +479,7 @@ const domain = ['https://geoserver2.communitygis.net/', 'http://localhost/'];
     var polylayer1 =[];
     var polylayer2 =[];
     var areaLayerList=[];
+    var cqlfilter;
     
 
 // <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -500,13 +523,17 @@ function showCheckboxes7() { //zonal geometry
 }
 function getBoundaryru(obj) {
     let boundary = obj.value;
-    // console.log(boundary)
+    console.log("boundary is "+boundary)
     if ($(obj).is(":checked")) {
 
         if (boundary == "{city}")
             putLayer("Mumbai");
         else if (boundary == "{wardGSouth}")    
             putWMSru("geonode:mumbai_ward_boundary");
+        // else if (boundary == "{193}")    
+        else
+            // putWMSru("GSouth:gsouth_corporate_wards");
+            putWMSru(boundary);
     }
     else{
         
@@ -514,6 +541,9 @@ function getBoundaryru(obj) {
             removeWMS("geonode:mumbai_ward_boundary");
         else if (boundary == "{city}")
             removeWMS("Mumbai");
+        // else if (boundary == "{193}")
+        else    
+            removeWMS("GSouth:gsouth_corporate_wards");
     }
 }
 function getBoundaryDP(obj) {
@@ -601,29 +631,60 @@ function removepolylayer(layer){
     // console.log("polylayer is :"+polylayer);
 }
 function putWMSru(layer) {
-    // console.log(layer)
+    console.log("layer is "+layer)
 if (layer == "geonode:mumbai_ward_boundary") {
-    layer = 'geonode:mumbai_ward_boundary';
+    var wmslayer = 'geonode:mumbai_ward_boundary';
     currentPos = [19.0182,72.8168]; 
     var maximumzoom = 19;
     var opac = 0.6;
     var zoom = 13;
+    cqlfilter = `Name='G/S'`;
+    // var wms_layer = L.tileLayer.wms('https://geoserver2.communitygis.net/geoserver/wms', {
+    //     // layers: 'geonode:island_city_revised_2_july',
+    //     layers: layer,
+    //     format: 'image/png',
+    //     transparent: 'true',
+    //     cql_filter: `Name='G/S'`,
+                                             
+    // });
+}
+
+else{
+    // if(layer == "GSouth:gsouth_corporate_wards"){
+        var wmslayer ='GSouth:gsouth_corporate_wards';
+        console.log("wmslayer is" +wmslayer)
+        console.log("layer is" +layer)
+        if(layer == '193')
+            cqlfilter =`wrd_numbe='193'`;
+        if(layer == '194')
+            cqlfilter =`wrd_numbe='194'`;
+        if(layer == '195')
+            cqlfilter =`wrd_numbe='195'`;
+        if(layer == '196')
+            cqlfilter =`wrd_numbe='196'`;
+        if(layer == '197')
+            cqlfilter =`wrd_numbe='197'`;
+        if(layer == '198')
+            cqlfilter =`wrd_numbe='198'`;
+        if(layer == '199')
+            cqlfilter =`wrd_numbe='199'`;
+        console.log("cqlfilter is"+cqlfilter)    ;
+        currentPos = [19.0113,72.8184];
+        var maximumzoom = 20;
+        var opac = 0.5;
+        var zoom = 14;
+        // var cqlfilter =`wrd_numbe='193'`;
+    }
+    
     var wms_layer = L.tileLayer.wms('https://geoserver2.communitygis.net/geoserver/wms', {
         // layers: 'geonode:island_city_revised_2_july',
-        layers: layer,
+        layers: wmslayer,
         format: 'image/png',
         transparent: 'true',
-        cql_filter: `Name='G/S'`,
+        cql_filter: cqlfilter,
+        
                                              
     });
-} 
-// else{
-//     if (layer == "ward61:ward61_regions_incom_18nov21") {
-//     currentPos = [19.1467,72.8283];
-//     var maximumzoom = 20;
-//     var opac = 0.5;
-//     var zoom = 16;
-//     }
 //     else if (layer == "ward61:ward61_boundary_1nov21") {
 //     currentPos = [19.1423,72.8137];
 //     var maximumzoom = 20;
@@ -656,7 +717,7 @@ if (layer == "geonode:mumbai_ward_boundary") {
 // }
     
         wms_layer.addTo(mymap);
-        // mymap.setView(currentPos, zoom);
+        mymap.setView(currentPos, zoom);
         newLayerList.push(wms_layer);
         popup_layer="https://geoserver2.communitygis.net/geoserver/ward61/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=" + wms_layer.options.layers + "&QUERY_LAYERS=" + wms_layer.options.layers;  
         console.log("popupzone",popup_layer);
@@ -669,7 +730,7 @@ if (layer == "geonode:mumbai_ward_boundary") {
                     // values = ~Type,
                     // title = "Zone Types",
                     // opacity = 1)
-        addWMSLegend(layer);
+        addWMSLegend(wmslayer);
 }
 function removeWMS(unchecked_layer) {
     newLayerList.forEach((layer, index) => {
