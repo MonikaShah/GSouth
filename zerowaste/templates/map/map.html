@@ -314,15 +314,16 @@ table, th, td
                             </div> -->
                            
                         </div>
+                        
                     </div>
                     
                     <br>
                       
                     <div class="multiselect">
-                      <!-- <div class="selectBox" onclick="showCheckboxes7()">
-                          <button type="button" class="btn btn-outline-dark" style="width: 90%;font-size:12px; "> {% trans "Ward 61 Landmarks" %}</button>
+                      <div class="selectBox" onclick="showCheckboxes7()">
+                          <button type="button" class="btn btn-outline-dark" style="width: 90%;font-size:12px; "> {% trans "G/South Ward DP Polygons" %}</button>
                           <div class="overSelect"></div>
-                      </div> -->
+                      </div>
                       <div id="checkboxes7">
                         <!--<div class="checkbox">
                              <label><input type="checkbox" value="{zones}" id ="zones" onchange="getBoundaryru(this)"><span> {% trans "Zones" %}</span></label>
@@ -331,33 +332,36 @@ table, th, td
                               <label><input type="checkbox" value="{osmbuild}" id ="build_osm" onchange="getBoundaryru(this)"><span> {% trans "Building Polygons" %}</span></label>
                           </div>  -->
                           <div class="checkbox">
-                            <label><input type="checkbox" value="{regions}"  id ="regions" onchange="getBoundaryru(this)"><span> {% trans "Regions" %}</span></label>
+                            <label><input type="checkbox" value="education"  id ="education" onchange="getBoundaryDP(this)"><span> {% trans "Education" %}</span></label>
                           </div>
                           <div class="checkbox">
-                            <label><input type="checkbox" value="{buildings}" id ="buildings" onchange="getBoundaryru(this)"><span> {% trans "Buildings Clusters" %}</span></label>
+                            <label><input type="checkbox" value="health" id ="health" onchange="getBoundaryDP(this)"><span> {% trans "Health" %}</span></label>
                           </div> 
                           <div class="checkbox">
-                            <label><input type="checkbox" value="{buildings_only}" id ="buildings_only" onchange="getBoundaryru(this)"><span> {% trans "Buildings" %}</span></label>
+                            <label><input type="checkbox" value="{housing}" id ="housing" onchange="getBoundaryDP(this)"><span> {% trans "Housing" %}</span></label>
                           </div> 
                           <div class="checkbox">
-                            <label><input type="checkbox" value="{sra}" id ="sra" disabled onchange="getBoundaryru(this)"><span> {% trans "SRA" %}</span></label>
+                            <label><input type="checkbox" value="{municipal_service}" id ="municipal_service"  onchange="getBoundaryDP(this)"><span> {% trans "Municipal Services" %}</span></label>
                           </div> 
                           <div class="checkbox">
-                            <label><input type="checkbox" value="{chs}" id ="chs" disabled onchange="getBoundaryru(this)"><span> {% trans "CHS" %}</span></label>
+                            <label><input type="checkbox" value="{offices}" id ="offices"  onchange="getBoundaryDP(this)"><span> {% trans "Offices" %}</span></label>
                           </div>
                           <div class="checkbox">
-                            <label><input type="checkbox" value="{smpa}" id ="smpa" disabled onchange="getBoundaryru(this)"><span> {% trans "SMPA" %}</span></label>
+                            <label><input type="checkbox" value="{open_spaces}" id ="open_spaces"  onchange="getBoundaryDP(this)"><span> {% trans "Open Spaces" %}</span></label>
                           </div>  
                          
                           <div class="checkbox">
-                            <label><input type="checkbox" value="{roads}" id ="roads" onchange="getBoundaryru(this)"><span> {% trans "Roads" %}</span></label>
+                            <label><input type="checkbox" value="{prim_activity}" id ="prim_activity" onchange="getBoundaryDP(this)"><span> {% trans "Primary Activities" %}</span></label>
                           </div> 
                           <!--Restricted access  -->
                           <div class="checkbox">
-                            <label><input type="checkbox" value="{buildings_noname}" id ="buildings_noname" onchange="getBoundaryru(this)"><span> {% trans "Buildings No Name" %}</span></label>
+                            <label><input type="checkbox" value="{public_utilities}" id ="public_utilities" onchange="getBoundaryDP(this)"><span> {% trans "Public Utilities" %}</span></label>
                           </div> 
                           <div class="checkbox">
-                            <label><input type="checkbox" value="{regions_noname}" id ="regions_noname" onchange="getBoundaryru(this)"><span> {% trans "Regions with no name" %}</span></label>
+                            <label><input type="checkbox" value="{social_amenities}" id ="social_amenities" onchange="getBoundaryDP(this)"><span> {% trans "Social Amenities" %}</span></label>
+                          </div>
+                          <div class="checkbox">
+                            <label><input type="checkbox" value="{tranporatation}" id ="tranporatation" onchange="getBoundaryDP(this)"><span> {% trans "TRansportation </span></label>
                           </div>
                           <!-- <div class="checkbox">
                             <label><input type="checkbox" value="{roads}" id ="buildingsosm" onchange="displayPoint()"><span> {% trans "OSM BUILDINGS" %}</span></label>
@@ -494,7 +498,6 @@ function showCheckboxes7() { //zonal geometry
         expanded = false;
     }
 }
-
 function getBoundaryru(obj) {
     let boundary = obj.value;
     // console.log(boundary)
@@ -504,65 +507,92 @@ function getBoundaryru(obj) {
             putLayer("Mumbai");
         else if (boundary == "{wardGSouth}")    
             putWMSru("geonode:mumbai_ward_boundary");
-        else if (boundary == "{61bound}")    
-            putWMSru("ward61:ward61_boundary_1nov21");
-        else if (boundary == "{regions}")    
-            putWMSru("ward61:ward61_regions_incom_18nov21"); 
-        else if (boundary == "{buildings}")    
-            // putWMSru("ward61:osm_buildings_29oct21"); 
-            displaypolygon();
-        else if (boundary == "{buildings_only}")    
-            putWMSru("ward61:osm_buildings_29oct21"); 
-            // displaypolygon();
-        else if (boundary == "{roads}")    
-            putWMSru("ward61:ward61osmroad25OCT"); 
-        else if (boundary == "{buildings_noname}")    
-            displaypolygon_buildings_noname();
-        else if (boundary == "{regions_noname}")    
-            displaypolygon_regions_noname();
-
+    }
+    else{
         
+        if (boundary == "{wardGSouth}")
+            removeWMS("geonode:mumbai_ward_boundary");
+        else if (boundary == "{city}")
+            removeWMS("Mumbai");
+    }
+}
+function getBoundaryDP(obj) {
+    
+    putWMSru("geonode:mumbai_ward_boundary");
+    let boundary = obj.value;
+    layer = 'geonode:island_city_revised_2_july';
+    // console.log(boundary)
+    if ($(obj).is(":checked")) {
+        layer_name =boundary;
+        var wms_layer = L.tileLayer.wms('https://geoserver2.communitygis.net/geoserver/wms', {
+                          layers: 'geonode:island_city_revised_2_july',
+                          format: 'image/png',
+                          
+                          transparent: 'true',
+                          cql_filter: `layer_name='${boundary}' AND ward_name='GS'`,
+                          // cql_filter: `layer_name='${opt}'`,                                        
+                          // cql_filter: `district_n=${district}`,                                        
+                      });
+                      console.log(wms_layer);
+                      console.log("layer name is "+layer_name)
+                      wms_layer.addTo(mymap);
+                      mymap.setView([19.0021,72.8148],14);
+                      newLayerList.push(wms_layer);
+                      if (wms_legend) 
+                        mymap.removeControl(wms_legend);                 
+                      addWMSLegend(layer);
+                    //   console.log(wms_layer);
+    }
+    else {
+      let boundary = obj.value;
+      if (boundary == "education")
+        removeFacility("education")
+      
+        else if (boundary == "health")
+        removeFacility("health")
+      else if (boundary == "housing")
+        removeFacility("housing")  
+      else if (boundary == "municipal_services")
+        removeFacility("municipal_services")
+      else if (boundary == "offices")
+        removeFacility("offices")
+      else if (boundary == "open_spaces")
+        removeFacility("open_spaces")
+      else if (boundary == "primary_activities")
+        removeFacility("primary_activities")
+      else if (boundary == "public_utility_and_facilities")
+        removeFacility("public_utility_and_facilities")
+      else if (boundary == "social_amenities")
+        removeFacility("social_amenities")
+      else if (boundary == "transportation")
+        removeFacility("transportation")
+    //   else if (facility == "fire_station")
+    //     removeWards1("fire_station")
+    //   else if (facility == "building")
+    //     removeLayer("geonode:osm_building_islandcity_14june") 
+    //   else if (facility == "roads")
+    //     removeLayer("geonode:osm_road_islandcity_14june")      
+    }
+}
 
-    } else {
-//       alert('in removeWM'+obj.value);
-        if (boundary == "{wardKWest}")
-            removeWMS("ward61:k_west_mumbai");
-        else if (boundary == "{suburban}")
-            removeWMS("Mumbai Suburban");
-        else if (boundary == "{regions}")                        
-            removeWMS("ward61:ward61_regions_incom_18nov21");
-        else if (boundary == "{61bound}")                        
-            removeWMS("ward61:ward61_boundary_1nov21");
-        else if (boundary == "{buildings}") {
-            console.log("remove building cluster");
-            removepolylayer(polylayer); 
+
+
+function removeFacility(layer_name){
+    var a = "layer_name="+"'"+layer_name+"'"+" AND "+"ward_name="+"'GS'";
+    console.log(a);
+    newLayerList.forEach((layer, index) => {
+        if (layer.options.cql_filter === a) {
+            mymap.removeLayer(layer);
+            if (wms_legend) {
+        // alert(wms_legend)
+              mymap.removeControl(wms_legend);
+            }
+            // newLayerList.splice(index, 1);
         }
-        else if (boundary == "{roads}")    
-            removeWMS("ward61:ward61osmroad25OCT"); 
-        else if (boundary == "{buildings_noname}")    
-            removepolylayer(polylayer1); 
-        else if (boundary == "{regions_noname}")    
-            removepolylayer(polylayer2); 
-    };
-
-
+    });
 }
-function putWMSarea(layer) {
-    var wms_layer = L.tileLayer.wms('https://geoserver2.communitygis.net/geoserver/wms', {
-                    layers: layer,
-                    format: 'image/png',
-                    transparent: 'true',
-                    // cql_filter: "district='Raigad'",
-                });
-    mymap.setView([19.1423,72.8137],13);
-    myselectedarea="Ward61";
-    console.log(myselectedarea);
-    // alert(wms_layer);
-    console.log(wms_layer)
-    wms_layer.addTo(mymap);
-    areaLayerList.push(wms_layer);
+ 
 
-}
 function removepolylayer(layer){
     console.log("polylayer is to be removed");
     mymap.removeLayer(layer);
@@ -587,46 +617,46 @@ if (layer == "geonode:mumbai_ward_boundary") {
                                              
     });
 } 
-else{
-    if (layer == "ward61:ward61_regions_incom_18nov21") {
-    currentPos = [19.1467,72.8283];
-    var maximumzoom = 20;
-    var opac = 0.5;
-    var zoom = 16;
-    }
-    else if (layer == "ward61:ward61_boundary_1nov21") {
-    currentPos = [19.1423,72.8137];
-    var maximumzoom = 20;
-    var opac = 0.5;
-    var zoom = 13;
-    }
-    else if (layer == "ward61:osm_buildings_29oct21") {
-    currentPos = [19.1467,72.8283];
-    layer = "";
-    var maximumzoom = 20;
-    var opac = 0.1;
-    var zoom = 16;
+// else{
+//     if (layer == "ward61:ward61_regions_incom_18nov21") {
+//     currentPos = [19.1467,72.8283];
+//     var maximumzoom = 20;
+//     var opac = 0.5;
+//     var zoom = 16;
+//     }
+//     else if (layer == "ward61:ward61_boundary_1nov21") {
+//     currentPos = [19.1423,72.8137];
+//     var maximumzoom = 20;
+//     var opac = 0.5;
+//     var zoom = 13;
+//     }
+//     else if (layer == "ward61:osm_buildings_29oct21") {
+//     currentPos = [19.1467,72.8283];
+//     layer = "";
+//     var maximumzoom = 20;
+//     var opac = 0.1;
+//     var zoom = 16;
     
-    }
-    else if (layer == "ward61:ward61osmroad25OCT") {
-    currentPos = [19.1467,72.8283];
-    var maximumzoom = 20;
-    var opac = 0.5;
-    var zoom = 16;
-    }
-        // console.log(layer)
-    var wms_layer = L.tileLayer.wms('https://geoserver2.communitygis.net/geoserver/wms', {
-        layers: layer,
-        format: 'image/png',
-        // opacity:0.5,
-        transparent:true,
-        maxZoom:maximumzoom,
+//     }
+//     else if (layer == "ward61:ward61osmroad25OCT") {
+//     currentPos = [19.1467,72.8283];
+//     var maximumzoom = 20;
+//     var opac = 0.5;
+//     var zoom = 16;
+//     }
+//         // console.log(layer)
+//     var wms_layer = L.tileLayer.wms('https://geoserver2.communitygis.net/geoserver/wms', {
+//         layers: layer,
+//         format: 'image/png',
+//         // opacity:0.5,
+//         transparent:true,
+//         maxZoom:maximumzoom,
 
-    });
-}
+//     });
+// }
     
         wms_layer.addTo(mymap);
-        mymap.setView(currentPos, zoom);
+        // mymap.setView(currentPos, zoom);
         newLayerList.push(wms_layer);
         popup_layer="https://geoserver2.communitygis.net/geoserver/ward61/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=" + wms_layer.options.layers + "&QUERY_LAYERS=" + wms_layer.options.layers;  
         console.log("popupzone",popup_layer);
