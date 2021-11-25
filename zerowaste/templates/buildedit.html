@@ -1,0 +1,121 @@
+{% extends 'base.html' %} {% load static%} {% block content %}
+{% load i18n %}
+
+<div class="container mb-5 text-center">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+    
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{message}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+        </div>
+    
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="POST" class="post-form" action="/buildupdate/{{data.osm_id}}" style="margin-top: 80px;">
+        {% csrf_token %}
+
+
+        <div>
+            <label class="col-sm-1 col-form-label"></label>
+            <div>
+                <h3>{% trans "Update Details of Buildings" %}</h3>
+            </div>
+        </div>
+        <!-- <div>
+            <label> {% trans "OSM ID" %}:</label>
+            <div>
+                <input type="text" name="osm_id" id="id_osm_id" required value="{{ data.osm_id }}" disabled =True />
+            </div>
+        </div> -->
+        <!-- <div>
+            <label> {% trans "Location:" %}</label>
+            <div>
+                <input type="text" name="geom" id="id_geom" value="{{ data.geom }}"  disabled =True />
+            </div>
+        </div> -->
+        <div>
+            <label> {% trans "Region Name:" %}</label>
+            <div>
+                <input type="text" name="region" id="id_region" value="{{ data.region }}" />
+            </div>
+        </div>
+       
+        <div>
+            <label> {% trans "Building Type:" %}</label>
+            <div>
+                <input type="text" name="building" id="id_building" value="{{ data.building }}" />
+            </div>
+        </div>
+        <div>
+            <label>{% trans "Building Name:" %}</label>
+            <div>
+                <input type="text" name="name" id="id_name" value="{{ data.name }}" />
+            </div>
+        </div>
+        <div>
+            <label>{% trans "Wing:" %}</label>
+            <div>
+                <input type="text" name="wing" id="id_wing" value="{{ data.wing }}" />
+            </div>
+        </div>
+        <div>
+            <label>{% trans "Number of Flats:" %}</label>
+            <div>
+                <input type="text" name="num_flat" id="id_num_flat"  value="{{ data.num_flat }}" />
+            </div>
+        </div>
+        <div>
+            <label>{% trans "Address:" %}</label>
+            <div>
+                <input type="text" name="addrstreet" id="id_addrstreet" value="{{ data.addrstreet }}" />
+            </div>
+        </div>
+        <!-- <div>
+            <label>{% trans "Zone Name:" %}</label>
+            <div>
+                <input type="text" name="lane_name" id="id_lane_name" required value="{{ data.lane_name }}" />
+            </div>
+        </div> -->
+        
+        <!-- <div>
+            <label>{% trans "Date:" %}</label>
+            <div>
+                <input type="text" name="date" id="id_date" required value="{{ data.date|date:'Y-m-d' }}" />
+            </div>
+        </div> -->
+        <!-- <div>
+            <label>{% trans "Supervisor Name:" %}</label>
+            <div>
+                <input type="text" name="supervisor_name" id="id_supervisor_name" required value="{{ data.supervisor_name }}" />
+            </div>
+        </div> -->
+        <!-- <div>
+            <label>{% trans "Rejected:" %}</label>
+            <div>
+                <input type="text" name="rejected" id="id_rejected" required value="{{ data.rejected }}" />
+            </div>
+        </div> -->
+        <!-- <div style="display:none;">
+            <label>{% trans "Zone ID:" %}</label>
+            <div>
+                <input type="text" name="zone_id_id" id="id_zone_id_id" required value="{{ data.zone_id_id }}" />
+            </div>
+        </div> -->
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label"></label>
+            <div class="col-sm-4">
+                <button type="submit" class="btn btn-success">{% trans "Update" %}</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    // console.log("{{ data.zone_id_id }}")
+</script>
+{% endblock %}

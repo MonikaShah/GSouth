@@ -1,0 +1,68 @@
+{% extends 'base.html' %} {% load crispy_forms_tags %} {% block content %} {% block extra_css %}
+{% load l10n %}
+{% load i18n %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<style>
+    /* .myform>* {
+        margin: 30px 0;
+    } */
+    
+    .form-row {
+        margin: 50px;
+    }
+    
+    .myform {
+        margin-top: 150px;
+    }
+</style>
+{% endblock %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+    </div>
+
+    {% endfor %}
+</ul>
+
+{% endif %} 
+<div class="container mb-7 text-center" style="margin-top: 100px;">
+    <h1 class='text-center mt-5'>{% trans "Waste Collection / Segregation Details" %}</h1>
+    <hr>
+    <div id = "formdiv">
+        <form method="POST" id = "regionForm"   class="form-group" style="text-align:left;">
+            {% csrf_token %}
+            <table style="margin-right: 10px";>{{ form.as_table }} </table> 
+            <br>
+        <centre><button type="submit" style="align-items: center;" class="btn btn-primary">{% trans "Submit" %}</button></centre>
+        
+    </form>
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script>
+    $("#id_region").change(function () {
+      var url = $("#regionForm").attr("data-url");  // get the url of the `load_cities` view
+      var regionId = $(this).val();  // get the selected country ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'region': regionId       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_building_cluster").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+  </script>
+
+
+    </div>
+</div> -->
+
+{% endblock %}

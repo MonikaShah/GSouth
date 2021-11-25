@@ -197,7 +197,7 @@ table, th, td
     margin: 20px;
 }
     
-#checkboxes4 label {
+#checkboxes2 label {
         display: block;
         text-align: left;
         margin: 10px;
@@ -385,10 +385,28 @@ table, th, td
                           <div class="checkbox">
                             <label><input type="checkbox" value="{tranporatation}" id ="tranporatation" onchange="getBoundaryDP(this)"><span> {% trans "Transportation" %} </span></label>
                           </div>
-                          <!-- <div class="checkbox">
-                            <label><input type="checkbox" value="{roads}" id ="buildingsosm" onchange="displayPoint()"><span> {% trans "OSM BUILDINGS" %}</span></label>
-                          </div>                       -->
-                      
+                          </div>
+                          <br>
+                          <div class="multiselect">
+                            <div class="selectBox" onclick="showCheckboxes2()">
+                                <button type="button" class="btn btn-outline-dark" style="width: 90%;font-size:12px; "> {% trans "G/South Ward OSM Data" %}</button>
+                                <div class="overSelect"></div>
+                            </div>
+
+                            <div id="checkboxes2">
+                                <div class="checkbox">
+                                    <label><input type="checkbox" value="regions" id ="regions" disabled onchange="getOSM(this)"><span> {% trans "Regions" %}</span></label>
+                                </div>
+                                <div class="checkbox">
+                                    <label><input type="checkbox" value="building_cluster" id ="building_cluster" disabled onchange="getOSM(this)"><span> {% trans "Building Cluster" %}</span></label>
+                                </div>
+                                <div class="checkbox">
+                                 <label><b><input type="checkbox" value="buildings" id ="buildings" onchange="getOSM(this)"><span> {% trans "Buildings" %}</span></b></label>
+                                </div> 
+                                <div class="checkbox">
+                                    <label><b><input type="checkbox" value="roads" id ="roads" onchange="getOSM(this)"><span> {% trans "Roads" %}</span></b></label>
+                                </div>
+                            </div>
                       </div>
                      <br>
                      <br>
@@ -626,7 +644,7 @@ function removeFacility(layer_name){
 function removepolylayer(layer){
     console.log("polylayer is to be removed");
     mymap.removeLayer(layer);
-    mymap.removeControl(wms_legend);
+    // mymap.removeControl(wms_legend);
     // mymap.clearLayers();
     // console.log("polylayer is :"+polylayer);
 }
@@ -839,67 +857,157 @@ function Identify(e) {
 }
 
     
-function displaypolygon_buildings_noname(){
+// function displaypolygon_buildings_noname(){
+//     let osm_buildings = JSON.parse('{{ geojson|safe }}')
+//     // console.log(osm_buildings)
+//     // alert(osm_buildings);
+//     // mymap.removeLayer(polylayer);
+//     mymap.setView([19.1467,72.8283],16);
+//     // mymap.clearLayers();
+//     polylayer1 = L.geoJSON(osm_buildings, 
+//     {style:function(feature){
+//         switch(feature.properties.building){
+//             case 'residence':return {color:"#FF0000"};
+//             case 'residential':return {color:"#FF0000"};
+//             case 'apartments':return {color:"#FF0000"};
+//             // case 'yes':return {color:"#c83daa"};
+//             case 'commercial':return {color:"#FF0000"};
+//             case 'Commercial':return {color:"#FF0000"};
+//             case 'office':return {color:"#FF0000"};
+//             case 'yes':return {color:"#FF0000"};
+//             case 'school':return {color:"#FF0000"};
+//             }
+//         },    
+        
+//         onEachFeature: onEachFeatureForPointBB,
+//         filter: NonameBuildingFilter,
+//     // }).addTo(mymap);
+//     });
+//     console.log("polylayer1 is "+polylayer1);
+//     polylayer1.addTo(mymap);
+    
+// }
+// function displaypolygon_regions_noname(){
+//     let osm_buildings = JSON.parse('{{ geojson|safe }}')
+//     // console.log(osm_buildings)
+//     // alert(osm_buildings);
+//     // mymap.removeLayer(polylayer);
+//     mymap.setView([19.1467,72.8283],16);
+//     // mymap.clearLayers();
+//     polylayer2 = L.geoJSON(osm_buildings, 
+//     {style:function(feature){
+//         switch(feature.properties.building){
+//             case 'residence':return {color:"#FF0000"};
+//             case 'residential':return {color:"#FF0000"};
+//             case 'apartments':return {color:"#FF0000"};
+//             // case 'yes':return {color:"#c83daa"};
+//             case 'commercial':return {color:"#FF0000"};
+//             case 'Commercial':return {color:"#FF0000"};
+//             case 'office':return {color:"#FF0000"};
+//             case 'yes':return {color:"#FF0000"};
+//             case 'school':return {color:"#FF0000"};
+//             }
+//         },    
+        
+//         onEachFeature: onEachFeatureForPointBB,
+//         filter: NonameRegionFilter,
+//     // }).addTo(mymap);
+//     });
+//     console.log("polylayer2 is "+polylayer2);
+//     polylayer2.addTo(mymap);
+    
+// }
+// function getOSM(obj){
+//     let boundary = obj.value;
+//     console.log(boundary)
+//     if ($(obj).is(":checked")) {
+//         if (boundary == "buildings"){
+//             // putWMSru("ward61:osm_buildings_29oct21"); 
+//             displaypolygon();
+//             console.log("Disaply polygon called")
+//         }
+//     }
+//     else
+//         removepolylayer(polylayer);
+// }
+function getOSM(){
     let osm_buildings = JSON.parse('{{ geojson|safe }}')
-    // console.log(osm_buildings)
-    // alert(osm_buildings);
+    console.log(osm_buildings)
+    alert(osm_buildings);
     // mymap.removeLayer(polylayer);
     mymap.setView([19.1467,72.8283],16);
     // mymap.clearLayers();
-    polylayer1 = L.geoJSON(osm_buildings, 
+    polylayer = L.geoJSON(osm_buildings, 
     {style:function(feature){
         switch(feature.properties.building){
-            case 'residence':return {color:"#FF0000"};
-            case 'residential':return {color:"#FF0000"};
-            case 'apartments':return {color:"#FF0000"};
+            case 'residence':return {color:"#c83daa"};
+            case 'residential':return {color:"#c83daa"};
+            case 'apartments':return {color:"#c83daa"};
             // case 'yes':return {color:"#c83daa"};
-            case 'commercial':return {color:"#FF0000"};
-            case 'Commercial':return {color:"#FF0000"};
-            case 'office':return {color:"#FF0000"};
-            case 'yes':return {color:"#FF0000"};
-            case 'school':return {color:"#FF0000"};
+            case 'commercial':return {color:"#55e232"};
+            case 'Commercial':return {color:"#55e232"};
+            case 'office':return {color:"#7d3fe9"};
+            case 'yes':return {color:"#1d80e3"};
+            case 'school':return {color:"#efe115"};
             }
         },    
         
         onEachFeature: onEachFeatureForPointBB,
-        filter: NonameBuildingFilter,
     // }).addTo(mymap);
     });
-    console.log("polylayer1 is "+polylayer1);
-    polylayer1.addTo(mymap);
-    
+    polylayer.addTo(mymap);
+    mymap.setView([19.0111, 72.8252],15);
+    // layer ="ward61:osm_buildings_29oct21";
+    // addWMSLegend(layer);
 }
-function displaypolygon_regions_noname(){
-    let osm_buildings = JSON.parse('{{ geojson|safe }}')
-    // console.log(osm_buildings)
-    // alert(osm_buildings);
-    // mymap.removeLayer(polylayer);
-    mymap.setView([19.1467,72.8283],16);
-    // mymap.clearLayers();
-    polylayer2 = L.geoJSON(osm_buildings, 
-    {style:function(feature){
-        switch(feature.properties.building){
-            case 'residence':return {color:"#FF0000"};
-            case 'residential':return {color:"#FF0000"};
-            case 'apartments':return {color:"#FF0000"};
-            // case 'yes':return {color:"#c83daa"};
-            case 'commercial':return {color:"#FF0000"};
-            case 'Commercial':return {color:"#FF0000"};
-            case 'office':return {color:"#FF0000"};
-            case 'yes':return {color:"#FF0000"};
-            case 'school':return {color:"#FF0000"};
-            }
-        },    
-        
-        onEachFeature: onEachFeatureForPointBB,
-        filter: NonameRegionFilter,
-    // }).addTo(mymap);
-    });
-    console.log("polylayer2 is "+polylayer2);
-    polylayer2.addTo(mymap);
+function onEachFeatureForPointBB(feature, layer) {
+    console.log("layer is"+layer)
+    // alert(layer.properties.name+"="+feature);
+    // layer.on({click:onClick })
+    // if(${feature.properties.name} !== null){
+    layer.bindPopup(`<div class = 'text-left'><table border =2><tr class="bg-primary"><td colspan=2>Building Information</td></tr>
+    <tr class="table-danger"><td>Building Name:</td><td> ${feature.properties.building_name}</td></tr>
+    <tr><td>Description :</td><td>${feature.properties.building_category}</td></tr>
+    <tr class="table-danger"><td>Ward:</td><td>${feature.properties.ward}</td></tr>
+    <tr class="table-danger"><td>Region:</td><td>${feature.properties.region}</td></tr>
+    <tr class="table-danger"><td>Building Cluster:</td><td>${feature.properties.building_cluster}</td></tr>
+
+    <tr><td>Number of Flats :</td><td>${feature.properties.num_flats_building}</td></tr>
+
+    <tr class="table-danger"><td>Number of shops :</td><td>${feature.properties.num_shops_building}</td></tr>
+    <tr><td>Number of Wings :</td><td>${feature.properties.wing}</td></tr>
+   
+    <tr colspan =2></tr>
+    <tr ><td colspan =2><b><center><a href = '/buildedit/${feature.properties.osm_id}' class="btn btn-info">Update Building Details</a></center></td></tr>
+    <tr ><td colspan =2 ><a href='/garbage_seg/' class="btn btn-success">Add Waste Segregation Details</a></td></tr></table>
+</div>`)
+    // }
     
+
 }
-function displaypolygon(){
+// function NonameBuildingFilter(feature) {
+//     // alert(layer.properties.name+"="+feature);
+//     // layer.on({click:onClick })
+//     console.log("Name is ");
+//     if(feature.properties.name !== null) 
+//         return false    
+//     else
+//         return true
+// }
+// function NonameRegionFilter(feature){
+//     console.log("Region is ")
+//     if(feature.properties.region !== null)
+//         return false
+//     else    
+//         return true
+// }
+function onClick(e) {console.log("Onclick")
+
+        alert(e);
+        mymap.clearLayers();
+        // mymap.removeLayer(layer);
+    }
+    function displaypolygon(){
     let osm_buildings = JSON.parse('{{ geojson|safe }}')
     // console.log(osm_buildings)
     // alert(osm_buildings);
@@ -926,8 +1034,8 @@ function displaypolygon(){
     });
     polylayer.addTo(mymap);
     
-    layer ="ward61:osm_buildings_29oct21";
-    addWMSLegend(layer);
+    // layer ="ward61:osm_buildings_29oct21";
+    // addWMSLegend(layer);
 }
 function onEachFeatureForPointBB(feature, layer) {
     // alert(layer.properties.name+"="+feature);
@@ -949,28 +1057,8 @@ function onEachFeatureForPointBB(feature, layer) {
     
 
 }
-function NonameBuildingFilter(feature) {
-    // alert(layer.properties.name+"="+feature);
-    // layer.on({click:onClick })
-    console.log("Name is ");
-    if(feature.properties.name !== null) 
-        return false    
-    else
-        return true
-}
-function NonameRegionFilter(feature){
-    console.log("Region is ")
-    if(feature.properties.region !== null)
-        return false
-    else    
-        return true
-}
-function onClick(e) {console.log("Onclick")
 
-        alert(e);
-        mymap.clearLayers();
-        // mymap.removeLayer(layer);
-    }
-mymap.addEventListener('click', Identify);
+ mymap.addEventListener('click', Identify);
+
 </script>
 {% endblock extra_map_javascript %}

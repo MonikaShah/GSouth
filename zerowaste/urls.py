@@ -7,4 +7,6 @@ from django.conf.urls.static import static
 # from visits.models import Visits
 urlpatterns = [
     path('',views.HomePage, name = 'homepage'),
+    path('garbage_seg/', views.WasteSegregationDetailsView,name='garbage_seg'),
+    path('buildedit/<int:id>',views.Buildedit, name ='buildedit'),
 ]
