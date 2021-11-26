@@ -404,7 +404,7 @@ table, th, td
                                  <label><b><input type="checkbox" value="buildings" id ="buildings" onchange="getOSM(this)"><span> {% trans "Buildings" %}</span></b></label>
                                 </div> 
                                 <div class="checkbox">
-                                    <label><b><input type="checkbox" value="roads" id ="roads" onchange="getOSM(this)"><span> {% trans "Roads" %}</span></b></label>
+                                    <label><b><input type="checkbox" value="roads" id ="roads" onchange="getroads(this)"><span> {% trans "Roads" %}</span></b></label>
                                 </div>
                             </div>
                       </div>
@@ -623,7 +623,66 @@ function getBoundaryDP(obj) {
     }
 }
 
+function getroads(obj){
+    // function getBoundaryDP(obj) {
+    
+    putWMSru("geonode:mumbai_ward_boundary");
+    let boundary = obj.value;
+    layer = 'geonode:island_city_revised_2_july';
+    // console.log(boundary)
+    if ($(obj).is(":checked")) {
+        layer_name =boundary;
+        var wms_layer = L.tileLayer.wms('https://geoserver2.communitygis.net/geoserver/wms', {
+                          layers: 'geonode:island_city_revised_2_july',
+                          format: 'image/png',
+                          
+                          transparent: 'true',
+                          cql_filter: `layer_name='${boundary}' AND ward_name='GS'`,
+                          // cql_filter: `layer_name='${opt}'`,                                        
+                          // cql_filter: `district_n=${district}`,                                        
+                      });
+                      console.log(wms_layer);
+                      console.log("layer name is "+layer_name)
+                      wms_layer.addTo(mymap);
+                      mymap.setView([19.0021,72.8148],14);
+                      newLayerList.push(wms_layer);
+                      if (wms_legend) 
+                        mymap.removeControl(wms_legend);                 
+                      addWMSLegend(layer);
+                    //   console.log(wms_layer);
+    }
+    else {
+      let boundary = obj.value;
+      if (boundary == "education")
+        removeFacility("education")
+      
+        else if (boundary == "health")
+        removeFacility("health")
+      else if (boundary == "housing")
+        removeFacility("housing")  
+      else if (boundary == "municipal_services")
+        removeFacility("municipal_services")
+      else if (boundary == "offices")
+        removeFacility("offices")
+      else if (boundary == "open_spaces")
+        removeFacility("open_spaces")
+      else if (boundary == "primary_activities")
+        removeFacility("primary_activities")
+      else if (boundary == "public_utility_and_facilities")
+        removeFacility("public_utility_and_facilities")
+      else if (boundary == "social_amenities")
+        removeFacility("social_amenities")
+      else if (boundary == "transportation")
+        removeFacility("transportation")
+    //   else if (facility == "fire_station")
+    //     removeWards1("fire_station")
+    //   else if (facility == "building")
+    //     removeLayer("geonode:osm_building_islandcity_14june") 
+    //   else if (facility == "roads")
+    //     removeLayer("geonode:osm_road_islandcity_14june")      
+    }
 
+}
 
 function removeFacility(layer_name){
     var a = "layer_name="+"'"+layer_name+"'"+" AND "+"ward_name="+"'GS'";
@@ -686,6 +745,8 @@ else{
             cqlfilter =`wrd_numbe='198'`;
         if(layer == '199')
             cqlfilter =`wrd_numbe='199'`;
+        else
+           cqlfilter = ``;
         console.log("cqlfilter is"+cqlfilter)    ;
         currentPos = [19.0113,72.8184];
         var maximumzoom = 20;
@@ -834,7 +895,7 @@ function Identify(e) {
                     popup.setLatLng(e.latlng);
                     mymap.openPopup(popup);
                     }
-                if (feature.properties.building) {
+                if (feature.properties.building_name) {
                     
                     // console.log("I reached at");
                     content = "<table class = 'popupclass' ><tr><td><b>Buildings Info</b></td><td></td></tr>" +
@@ -931,25 +992,34 @@ function Identify(e) {
 //         removepolylayer(polylayer);
 // }
 function getOSM(){
+  layer = 'geonode:mumbai_ward_boundary';
+   putWMSru(layer);
+   
     let osm_buildings = JSON.parse('{{ geojson|safe }}')
     console.log(osm_buildings)
-    alert(osm_buildings);
+    // alert(osm_buildings);
     // mymap.removeLayer(polylayer);
     mymap.setView([19.1467,72.8283],16);
     // mymap.clearLayers();
     polylayer = L.geoJSON(osm_buildings, 
     {style:function(feature){
-        switch(feature.properties.building){
+      console.log("category is "+feature.properties.building_category)
+        switch(feature.properties.building_category){
             case 'residence':return {color:"#c83daa"};
             case 'residential':return {color:"#c83daa"};
             case 'apartments':return {color:"#c83daa"};
-            // case 'yes':return {color:"#c83daa"};
+            case 'yes':return {color:"#c83daa"};
             case 'commercial':return {color:"#55e232"};
-            case 'Commercial':return {color:"#55e232"};
+            // case 'Commercial':return {color:"#55e232"};
             case 'office':return {color:"#7d3fe9"};
             case 'yes':return {color:"#1d80e3"};
             case 'school':return {color:"#efe115"};
+            case 'hotel':return {color: "#d48b6b"};
+            case 'mosque':return{color:"#227627"};
             }
+          switch(feature.properties.building_name){
+            case null:return{color:'#ff0000'};
+          }
         },    
         
         onEachFeature: onEachFeatureForPointBB,
@@ -959,31 +1029,6 @@ function getOSM(){
     mymap.setView([19.0111, 72.8252],15);
     // layer ="ward61:osm_buildings_29oct21";
     // addWMSLegend(layer);
-}
-function onEachFeatureForPointBB(feature, layer) {
-    console.log("layer is"+layer)
-    // alert(layer.properties.name+"="+feature);
-    // layer.on({click:onClick })
-    // if(${feature.properties.name} !== null){
-    layer.bindPopup(`<div class = 'text-left'><table border =2><tr class="bg-primary"><td colspan=2>Building Information</td></tr>
-    <tr class="table-danger"><td>Building Name:</td><td> ${feature.properties.building_name}</td></tr>
-    <tr><td>Description :</td><td>${feature.properties.building_category}</td></tr>
-    <tr class="table-danger"><td>Ward:</td><td>${feature.properties.ward}</td></tr>
-    <tr class="table-danger"><td>Region:</td><td>${feature.properties.region}</td></tr>
-    <tr class="table-danger"><td>Building Cluster:</td><td>${feature.properties.building_cluster}</td></tr>
-
-    <tr><td>Number of Flats :</td><td>${feature.properties.num_flats_building}</td></tr>
-
-    <tr class="table-danger"><td>Number of shops :</td><td>${feature.properties.num_shops_building}</td></tr>
-    <tr><td>Number of Wings :</td><td>${feature.properties.wing}</td></tr>
-   
-    <tr colspan =2></tr>
-    <tr ><td colspan =2><b><center><a href = '/buildedit/${feature.properties.osm_id}' class="btn btn-info">Update Building Details</a></center></td></tr>
-    <tr ><td colspan =2 ><a href='/garbage_seg/' class="btn btn-success">Add Waste Segregation Details</a></td></tr></table>
-</div>`)
-    // }
-    
-
 }
 // function NonameBuildingFilter(feature) {
 //     // alert(layer.properties.name+"="+feature);
@@ -1016,11 +1061,12 @@ function onClick(e) {console.log("Onclick")
     // mymap.clearLayers();
     polylayer = L.geoJSON(osm_buildings, 
     {style:function(feature){
-        switch(feature.properties.building){
+      console.log("category is "+feature.properties.building_category)
+        switch(feature.properties.building_category){
             case 'residence':return {color:"#c83daa"};
             case 'residential':return {color:"#c83daa"};
             case 'apartments':return {color:"#c83daa"};
-            // case 'yes':return {color:"#c83daa"};
+            case 'yes':return {color:"#c83daa"};
             case 'commercial':return {color:"#55e232"};
             case 'Commercial':return {color:"#55e232"};
             case 'office':return {color:"#7d3fe9"};
@@ -1041,14 +1087,16 @@ function onEachFeatureForPointBB(feature, layer) {
     // alert(layer.properties.name+"="+feature);
     // layer.on({click:onClick })
     // if(${feature.properties.name} !== null){
-    layer.bindPopup(`<div class = 'text-left'><table border =2><tr class="bg-primary"><td colspan=2>Building Information</td></tr>
-    <tr class="table-danger"><td>Building Name:</td><td> ${feature.properties.name}</td></tr>
-    <tr><td>Description :</td><td>${feature.properties.building}</td></tr>
-    <tr class="table-danger"><td>Region:</td><td>${feature.properties.region}</td></tr>
-    <tr><td>Number of Flats :</td><td>${feature.properties.num_flat}</td></tr>
-    <tr class="table-danger"><td>Number of shops :</td><td>${feature.properties.num_shops}</td></tr>
-    <tr><td>Number of Wings :</td><td>${feature.properties.wing}</td></tr>
-    <tr class="table-danger"><td>Address : </td><td>${feature.properties.addrstreet}</td></tr>
+      layer.bindPopup(`<div class = 'text-left'><table border =2><tr class="bg-primary"><td colspan=2>Building Information</td></tr>
+    <tr class="table-danger"><td>Building Name:</td><td> ${feature.properties.building_name}</td></tr>
+    <tr class="bg-primary"><td>Building Type :</td><td>${feature.properties.building_category}</td></tr>
+    <tr class="table-danger"><td>Ward:</td><td>${feature.properties.ward}</td></tr>
+    <tr class="bg-primary"><td>Region:</td><td>${feature.properties.region}</td></tr>
+    <tr class="table-danger"><td>Building Cluster:</td><td>${feature.properties.building_cluster}</td></tr>
+    <tr class="bg-primary"><td>Number of Flats :</td><td>${feature.properties.num_flats_building}</td></tr>
+    <tr class="table-danger"><td>Number of shops :</td><td>${feature.properties.num_shops_building}</td></tr>
+    <tr class="bg-primary"><td>Number of Wings :</td><td>${feature.properties.wing}</td></tr>
+   
     <tr colspan =2></tr>
     <tr ><td colspan =2><b><center><a href = '/buildedit/${feature.properties.osm_id}' class="btn btn-info">Update Building Details</a></center></td></tr>
     <tr ><td colspan =2 ><a href='/garbage_seg/' class="btn btn-success">Add Waste Segregation Details</a></td></tr></table>

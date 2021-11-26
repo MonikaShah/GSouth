@@ -1,5 +1,6 @@
 from django import forms
 from .models import WasteSegregationDetails
+from map.models import GsouthBuildingPolygons
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, ButtonHolder
 import datetime
@@ -53,3 +54,33 @@ class WasteSegregationDetailsForm(forms.ModelForm):
         fields = '__all__'
         # fields = ['region','building_cluster']
         # exclude = ['category']
+
+class GsouthBuildingPolygonsForm(forms.ModelForm): 
+    # geom = forms.CharField(label = _(u'Geometry'))  # This field type is a guess.
+    # fid = forms.IntegerField(label = _(u'FId'))
+    # osm_id = forms.DecimalField(label = _(u'OSM ID'))
+    # addrstreet = forms.CharField(label = _(u'Address'))
+    ward = forms.CharField(label = _(u'Ward*'))
+    region = forms.CharField(label = _(u'Region*'))
+    building_cluster = forms.CharField(label = _(u'Building Cluster'),required=False)
+    building_category = forms.CharField(label = _(u'Building Type'))
+    building_name = forms.CharField(label = _(u'Building Name'))
+    wing_name = forms.CharField(label = _(u'Wing Name'),required=False)
+    num_wings_buildingcluster = forms.IntegerField(label=_(u'Number of Wings in cluster'),required=False)
+    num_flats_building = forms.IntegerField(label = _(u'Number of Flats in Building'),required=False)
+    num_shops_building = forms.IntegerField(label = _(u'Number of Shops in Building'),required=False)
+    building_population = forms.IntegerField(label = _(u'Building Population'),required=False)
+    
+    
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        num_flat = cleaned_data.get('num_flats_building')
+        wing = cleaned_data.get('wing_name')
+        if not any([num_flat, wing]):
+            raise forms.ValidationError(u'Please enter a value')
+            # raise forms.ValidationError('Future Dates are not allowed.!!')
+        
+    class Meta:
+        model = GsouthBuildingPolygons
+        fields = '__all__'
+        exclude = ['geom']

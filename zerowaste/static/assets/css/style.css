@@ -17,7 +17,7 @@ body {
     height: 100%;
 }
 
-#footer {
+/* #footer {
     position: fixed;
     height: 5px;
     left: 0;
@@ -27,7 +27,7 @@ body {
     color: white;
     text-align: center;
     z-index: 1;
-}
+} */
 
 a {
     color: white;
@@ -62,6 +62,7 @@ h3,
 .font-primary{
     font-family: "Lato", sans-serif;
     color: rgb(8, 165, 60);
+    text-align: left;
 }
 
 
@@ -1132,7 +1133,7 @@ section {
 /*--------------------------------------------------------------
 # Footer
 --------------------------------------------------------------*/
-
+/* 
 #footer {
     background: #000000;
     padding: 30px 0;
@@ -1149,4 +1150,4 @@ section {
     text-align: center;
     font-size: 13px;
     color: #fff;
-}
+} */

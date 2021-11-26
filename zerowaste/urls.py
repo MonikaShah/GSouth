@@ -9,4 +9,5 @@ urlpatterns = [
     path('',views.HomePage, name = 'homepage'),
     path('garbage_seg/', views.WasteSegregationDetailsView,name='garbage_seg'),
     path('buildedit/<int:id>',views.Buildedit, name ='buildedit'),
+    path('buildupdate/<int:id>',views.Buildupdate, name ='buildupdate'),
 ]

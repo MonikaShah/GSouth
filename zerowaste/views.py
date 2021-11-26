@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect,HttpResponse,HttpResponseRedirect
-from .models import WasteSegregationDetails #,OsmBuildings29Oct21
-from .forms import WasteSegregationDetailsForm
+from .models import WasteSegregationDetails#,OsmBuildings29Oct21
+from map.models import  GsouthBuildingPolygons
+from .forms import WasteSegregationDetailsForm,GsouthBuildingPolygonsForm
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.core.serializers import serialize
@@ -64,4 +65,25 @@ def Buildedit(request, id):
         #'Visitor_count': recd_response
     }
     # return render(request,'edit.html', {'data':data}) 
+    return render(request,'buildedit.html',context) 
+def Buildupdate(request, id):
+    # print(id)
+    data = GsouthBuildingPolygons.objects.get(osm_id=id) 
+    # print(data) 
+    form = GsouthBuildingPolygonsForm(request.POST, instance=data)  
+    print(form)
+    
+    if form.is_valid(): 
+        print("success") 
+        messages.success(request,"Record Updated")          
+        form.save()          
+    else:
+        print("fail")
+        messages.error(request,"Sorry! Record not updated. Try Again")
+    context = {
+        'data':data,
+        #'Visitor_count': recd_response
+        } 
+    print(GsouthBuildingPolygonsForm.errors)
+    
     return render(request,'buildedit.html',context) 
