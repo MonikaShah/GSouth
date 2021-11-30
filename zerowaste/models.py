@@ -1,4 +1,6 @@
 from django.db import models
+from django.forms import ModelForm
+from datetime import datetime
 
 # Create your models here.
 class WasteSegregationDetails(models.Model):
@@ -32,3 +34,9 @@ class WasteSegregationDetails(models.Model):
         db_table = 'waste_segregation_details'
     def __str__(self):
         return self.coll_date
+
+class UploadPictureModel(models.Model):
+    picture = models.ImageField(upload_to='Images/', blank=True, null=True)
+    # region_name = models.CharField(max_length=100, blank=True, null=True)
+    # ward_name = models.CharField(max_length=100, blank=True, null=True)
+    date = models.DateField(null=True, blank=True, default=datetime.now)

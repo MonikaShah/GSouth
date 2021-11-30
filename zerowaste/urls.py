@@ -10,4 +10,7 @@ urlpatterns = [
     path('garbage_seg/', views.WasteSegregationDetailsView,name='garbage_seg'),
     path('buildedit/<int:id>',views.Buildedit, name ='buildedit'),
     path('buildupdate/<int:id>',views.Buildupdate, name ='buildupdate'),
+    path('login/', views.user_login, name='login'),
+    path("logout", views.logout_request, name="logout"),
+    path('uploadimage/<int:id>',views.uploadimage, name = 'uploadimage'),
 ]

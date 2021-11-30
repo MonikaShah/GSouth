@@ -2,6 +2,7 @@
 {% load static%}
 {% block extra_map_css %}
 {% load i18n %}
+{% load has_group %}
 <!-- import psycopg2 -->
 <style>
 
@@ -400,9 +401,15 @@ table, th, td
                                 <div class="checkbox">
                                     <label><input type="checkbox" value="building_cluster" id ="building_cluster" disabled onchange="getOSM(this)"><span> {% trans "Building Cluster" %}</span></label>
                                 </div>
+                                {% if request.user|has_group:"Editor" %}
                                 <div class="checkbox">
-                                 <label><b><input type="checkbox" value="buildings" id ="buildings" onchange="getOSM(this)"><span> {% trans "Buildings" %}</span></b></label>
+                                 <label><b><input type="checkbox" value="buildings" id ="buildings" onchange="getOSMUpdation(this)"><span> {% trans "Buildings" %}</span></b></label>
                                 </div> 
+                                {%else %}
+                                <div class="checkbox">
+                                  <label><b><input type="checkbox" value="buildings" id ="buildings" onchange="getOSM(this)"><span> {% trans "Buildings" %}</span></b></label>
+                                 </div>
+                                {% endif %}
                                 <div class="checkbox">
                                     <label><b><input type="checkbox" value="roads" id ="roads" onchange="getroads(this)"><span> {% trans "Roads" %}</span></b></label>
                                 </div>
@@ -566,7 +573,7 @@ function getBoundaryru(obj) {
 }
 function getBoundaryDP(obj) {
     
-    putWMSru("geonode:mumbai_ward_boundary");
+  putWMSru("GSouth:g_south_asmita");
     let boundary = obj.value;
     layer = 'geonode:island_city_revised_2_july';
     // console.log(boundary)
@@ -626,29 +633,30 @@ function getBoundaryDP(obj) {
 function getroads(obj){
     // function getBoundaryDP(obj) {
     
-    putWMSru("geonode:mumbai_ward_boundary");
+    putWMSru("GSouth:g_south_asmita");
     let boundary = obj.value;
-    layer = 'geonode:island_city_revised_2_july';
+    layer = 'GSouth:gsouth_transportation';
     // console.log(boundary)
     if ($(obj).is(":checked")) {
         layer_name =boundary;
         var wms_layer = L.tileLayer.wms('https://geoserver2.communitygis.net/geoserver/wms', {
-                          layers: 'geonode:island_city_revised_2_july',
+                          layers: 'GSouth:gsouth_transportation',
                           format: 'image/png',
-                          
                           transparent: 'true',
-                          cql_filter: `layer_name='${boundary}' AND ward_name='GS'`,
-                          // cql_filter: `layer_name='${opt}'`,                                        
-                          // cql_filter: `district_n=${district}`,                                        
+                          // cql_filter: `layer_name='${boundary}' AND ward_name='GS'`,
+                                                                 
                       });
                       console.log(wms_layer);
                       console.log("layer name is "+layer_name)
                       wms_layer.addTo(mymap);
                       mymap.setView([19.0021,72.8148],14);
                       newLayerList.push(wms_layer);
-                      if (wms_legend) 
-                        mymap.removeControl(wms_legend);                 
-                      addWMSLegend(layer);
+                      // alert(wms_legend);
+                      // if (wms_legend) 
+                      //   mymap.removeControl(wms_legend);                 
+                      
+                      // addCustomLegend(layer);
+                      legend.addTo(mymap);
                     //   console.log(wms_layer);
     }
     else {
@@ -726,8 +734,7 @@ if (layer == "geonode:mumbai_ward_boundary") {
     // });
 }
 
-else{
-    // if(layer == "GSouth:gsouth_corporate_wards"){
+else if(layer == "GSouth:gsouth_corporate_wards"){
         var wmslayer ='GSouth:gsouth_corporate_wards';
         console.log("wmslayer is" +wmslayer)
         console.log("layer is" +layer)
@@ -754,47 +761,24 @@ else{
         var zoom = 14;
         // var cqlfilter =`wrd_numbe='193'`;
     }
-    
+    else if (layer == "GSouth:g_south_asmita"){
+      // alert("CORRECT");
+      var wmslayer = 'GSouth:g_south_asmita';
+        currentPos = [19.0182,72.8168]; 
+        var maximumzoom = 19;
+        var opac = 0.6;
+        var zoom = 13;
+        cqlfilter = `ward='GSouth_ward'`;
+    }
     var wms_layer = L.tileLayer.wms('https://geoserver2.communitygis.net/geoserver/wms', {
         // layers: 'geonode:island_city_revised_2_july',
         layers: wmslayer,
         format: 'image/png',
         transparent: 'true',
-        cql_filter: cqlfilter,
-        
+        cql_filter: cqlfilter,       
                                              
     });
-//     else if (layer == "ward61:ward61_boundary_1nov21") {
-//     currentPos = [19.1423,72.8137];
-//     var maximumzoom = 20;
-//     var opac = 0.5;
-//     var zoom = 13;
-//     }
-//     else if (layer == "ward61:osm_buildings_29oct21") {
-//     currentPos = [19.1467,72.8283];
-//     layer = "";
-//     var maximumzoom = 20;
-//     var opac = 0.1;
-//     var zoom = 16;
-    
-//     }
-//     else if (layer == "ward61:ward61osmroad25OCT") {
-//     currentPos = [19.1467,72.8283];
-//     var maximumzoom = 20;
-//     var opac = 0.5;
-//     var zoom = 16;
-//     }
-//         // console.log(layer)
-//     var wms_layer = L.tileLayer.wms('https://geoserver2.communitygis.net/geoserver/wms', {
-//         layers: layer,
-//         format: 'image/png',
-//         // opacity:0.5,
-//         transparent:true,
-//         maxZoom:maximumzoom,
 
-//     });
-// }
-    
         wms_layer.addTo(mymap);
         mymap.setView(currentPos, zoom);
         newLayerList.push(wms_layer);
@@ -827,6 +811,10 @@ function removeWMS(unchecked_layer) {
     }
     });
 }
+
+// function addCustomLegend(layer){
+  
+// }
 function addWMSLegend(layer) {
     lagendGraphic = "https://geoserver2.communitygis.net/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=" + layer + "&LEGEND_OPTIONS=forceLabels:on";
     wms_legend = L.wmsLegend(lagendGraphic);
@@ -991,9 +979,51 @@ function Identify(e) {
 //     else
 //         removepolylayer(polylayer);
 // }
+function getOSMUpdation(){
+  layer = 'geonode:mumbai_ward_boundary';
+  //  putWMSru(layer);
+   putWMSru("GSouth:g_south_asmita");
+   
+    let osm_buildings = JSON.parse('{{ geojson|safe }}')
+    console.log(osm_buildings)
+    // alert(osm_buildings);
+    // mymap.removeLayer(polylayer);
+    mymap.setView([19.1467,72.8283],16);
+    // mymap.clearLayers();
+    polylayer = L.geoJSON(osm_buildings, 
+    {style:function(feature){
+      console.log("category is "+feature.properties.building_category)
+        switch(feature.properties.building_category){
+            case 'residence':return {color:"#c83daa"};
+            case 'residential':return {color:"#c83daa"};
+            case 'apartments':return {color:"#c83daa"};
+            case 'yes':return {color:"#c83daa"};
+            case 'commercial':return {color:"#55e232"};
+            // case 'Commercial':return {color:"#55e232"};
+            case 'office':return {color:"#7d3fe9"};
+            case 'yes':return {color:"#1d80e3"};
+            case 'school':return {color:"#efe115"};
+            case 'hotel':return {color: "#d48b6b"};
+            case 'mosque':return{color:"#227627"};
+            }
+          switch(feature.properties.building_name){
+            case null:return{color:'#ff0000'};
+          }
+        },    
+        
+        onEachFeature: onEachFeatureUpdation,
+    // }).addTo(mymap);
+    });
+    polylayer.addTo(mymap);
+    mymap.setView([19.0111, 72.8252],15);
+    // layer ="ward61:osm_buildings_29oct21";
+    // addWMSLegend(layer);
+}
+
 function getOSM(){
   layer = 'geonode:mumbai_ward_boundary';
-   putWMSru(layer);
+  //  putWMSru(layer);
+   putWMSru("GSouth:g_south_asmita");
    
     let osm_buildings = JSON.parse('{{ geojson|safe }}')
     console.log(osm_buildings)
@@ -1052,7 +1082,7 @@ function onClick(e) {console.log("Onclick")
         mymap.clearLayers();
         // mymap.removeLayer(layer);
     }
-    function displaypolygon(){
+function displaypolygon(){
     let osm_buildings = JSON.parse('{{ geojson|safe }}')
     // console.log(osm_buildings)
     // alert(osm_buildings);
@@ -1083,7 +1113,31 @@ function onClick(e) {console.log("Onclick")
     // layer ="ward61:osm_buildings_29oct21";
     // addWMSLegend(layer);
 }
+
+function onEachFeatureUpdation(feature, layer) {
+  
+  // alert(layer.properties.name+"="+feature);
+  // layer.on({click:onClick })
+  // if(${feature.properties.name} !== null){
+    layer.bindPopup(`<div class = 'text-left'><table border =2><tr class="bg-primary"><td colspan=2>Building Information</td></tr>
+  <tr class="table-danger"><td>Building Name:</td><td> ${feature.properties.building_name}</td></tr>
+  <tr class="bg-primary"><td>Building Type :</td><td>${feature.properties.building_category}</td></tr>
+  <tr class="table-danger"><td>Ward:</td><td>${feature.properties.ward}</td></tr>
+  <tr class="bg-primary"><td>Region:</td><td>${feature.properties.region}</td></tr>
+  <tr class="table-danger"><td>Building Cluster:</td><td>${feature.properties.building_cluster}</td></tr>
+  <tr class="bg-primary"><td>Number of Flats :</td><td>${feature.properties.num_flats_building}</td></tr>
+  <tr class="table-danger"><td>Number of shops :</td><td>${feature.properties.num_shops_building}</td></tr>
+  <tr class="bg-primary"><td>Number of Wings :</td><td>${feature.properties.wing}</td></tr>
+ 
+  <tr colspan =2></tr> 
+  <tr ><td colspan =2><b><center><a href = '/buildedit/${feature.properties.osm_id}' class="btn btn-info">Update Building Details</a></center></td></tr>
+  <tr ><td colspan =2 ><a href='/garbage_seg/' class="btn btn-success">Add Waste Segregation Details</a></td></tr></table>
+ </div>`)
+}
+
+
 function onEachFeatureForPointBB(feature, layer) {
+  
     // alert(layer.properties.name+"="+feature);
     // layer.on({click:onClick })
     // if(${feature.properties.name} !== null){
@@ -1096,17 +1150,35 @@ function onEachFeatureForPointBB(feature, layer) {
     <tr class="bg-primary"><td>Number of Flats :</td><td>${feature.properties.num_flats_building}</td></tr>
     <tr class="table-danger"><td>Number of shops :</td><td>${feature.properties.num_shops_building}</td></tr>
     <tr class="bg-primary"><td>Number of Wings :</td><td>${feature.properties.wing}</td></tr>
-   
-    <tr colspan =2></tr>
-    <tr ><td colspan =2><b><center><a href = '/buildedit/${feature.properties.osm_id}' class="btn btn-info">Update Building Details</a></center></td></tr>
-    <tr ><td colspan =2 ><a href='/garbage_seg/' class="btn btn-success">Add Waste Segregation Details</a></td></tr></table>
-</div>`)
-    // }
+   <tr class="table-danger"><td>Building Image :</td><td><img src= "${feature.properties.picture}"></td></tr>
     
+    
+</div>`)
+   
 
 }
 
  mymap.addEventListener('click', Identify);
+ var legend = L.control({position: 'bottomright'});
+
+  legend.onAdd = function (mymap) {
+    if(document.getElementById('education').checked) {
+      var selection=  "education";
+      alert("education")
+    }
+
+      var div = L.DomUtil.create('div', 'info legend'),
+          grades = ["DE1.1", "DE1.2"],
+          labels = ["Municipal School","Primary and Secondary School"];
+
+      // loop through our density intervals and generate a label with a colored square for each interval
+      div.innerHTML += "<h4>Legend</h4><hr>";
+      for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=grades[i] + ':' + labels[i] +'<br>';
+      }
+
+      return div;
+  };
 
 </script>
 {% endblock extra_map_javascript %}

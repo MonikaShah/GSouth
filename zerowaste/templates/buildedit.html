@@ -1,5 +1,24 @@
-{% extends 'base.html' %} {% load static%} {% block content %}
-{% load i18n %}
+{% extends 'base.html' %} {% load static%} {% block content %}{% load has_group %}
+{% load i18n %}{% block extra_css %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<style>
+    .form-row {
+        margin: 50px;
+    }
+    
+    table {
+        padding: 10px;
+    }
+    #formdiv{
+        float: left;  
+
+    }
+    #picimage{
+       padding-left: 0px; 
+    }
+</style>
+{% endblock %}
 
 <div class="container mb-5 text-center">
     {% if messages %}
@@ -40,9 +59,23 @@
                 <tr><td>{% trans "Number of flats" %} </td> <td><input type="text" name="num_flats_building" id="id_num_flats_building" value="{{ data.num_flats_building }}" /></td></tr>
                 <tr><td>{% trans "Number of shops" %} </td> <td><input type="text" name="num_shops_building" id="id_num_shops_building"      value="{{ data.num_shops_building }}" /></td></tr>
                 <tr><td>{% trans "Building Population" %} </td> <td><input type="text" name="building_population" id="id_building_population" value="{{ data.building_population }}"/></td></tr>
+                <tr><td>{% trans "Building Photo" %} </td> <td><img id ='id_picture' src ='{{ data.picture.url }}' style="height:20px; width:200px; border:2px solid #555;"/></td></tr>
+                <!-- {% if request.user|has_group:"Editor" %} -->
+                <tr><td colspan =2 ><centre><a href ="">Upload Building Image</a></centre></td></tr>
+                <!-- {% endif %} -->
             </centre>
             </table>
-            <br><br>
+        </form>
+            <br>
+        </div>
+        <div>
+            <label class="col-sm-1 col-form-label"></label>
+            <div id = "picimage" >{{ data.picture.url }}
+                <!-- {% for i in diary %} -->
+                    <!-- {{ i.date}} -->
+                    <img id ='testimg' src ='{{ data.picture.url }}' style="height:400px; width:550px; border:2px solid #555;"/>
+                <!-- {% endfor %} -->
+                </div>
         </div>
         <div class="form-group row">
             <label class="col-sm-1 col-form-label"></label>

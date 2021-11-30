@@ -1,5 +1,5 @@
 from django import forms
-from .models import WasteSegregationDetails
+from .models import WasteSegregationDetails,UploadPictureModel
 from map.models import GsouthBuildingPolygons
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, ButtonHolder
@@ -70,6 +70,7 @@ class GsouthBuildingPolygonsForm(forms.ModelForm):
     num_flats_building = forms.IntegerField(label = _(u'Number of Flats in Building'),required=False)
     num_shops_building = forms.IntegerField(label = _(u'Number of Shops in Building'),required=False)
     building_population = forms.IntegerField(label = _(u'Building Population'),required=False)
+    picture = forms.CharField(widget=forms.Textarea(attrs={"rows":10, "cols":10}))
     
     
     def clean(self):
@@ -84,3 +85,9 @@ class GsouthBuildingPolygonsForm(forms.ModelForm):
         model = GsouthBuildingPolygons
         fields = '__all__'
         exclude = ['geom']
+
+
+class UploadPictureForm(forms.ModelForm):
+    class Meta:
+        model = UploadPictureModel
+        fields = ('picture','date')

@@ -17,6 +17,7 @@ class GsouthBuildingPolygons(models.Model):
     num_wings_buildingcluster = models.IntegerField(blank=True, null=True)
     num_flats_building = models.IntegerField(blank=True, null=True)
     num_shops_buildings = models.IntegerField(blank=True, null=True)
+    picture = models.ImageField(upload_to='Images/', blank=True, null=True)
 
     class Meta:
         managed = False
